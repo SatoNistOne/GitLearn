@@ -1,0 +1,37 @@
+version: '3.8'
+
+services:
+  db:
+    image: postgres:15-alpine
+    container_name: gitlearn_db
+    environment:
+      POSTGRES_USER: gituser
+      POSTGRES_PASSWORD: gitpass
+      POSTGRES_DB: gitlearn
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U gituser -d gitlearn"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  web:
+    build: .
+    container_name: gitlearn_web
+    command: python run.py
+    volumes:
+      - .:/app
+    ports:
+      - "5000:5000"
+    environment:
+      DATABASE_URL: postgresql://gituser:gitpass@db:5432/gitlearn
+      SECRET_KEY: super-secret-key-for-git-learn-app
+    depends_on:
+      db:
+        condition: service_healthy
+
+volumes:
+  postgres_data:

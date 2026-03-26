@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+
+{% block title %}Главная - GitLearn{% endblock %}
+
+{% block content %}
+<div class="hero">
+    <h1>Изучай Git интерактивно</h1>
+    <p>Бесплатный курс по системе контроля версий Git</p>
+    {% if not current_user.is_authenticated %}
+        <a href="{{ url_for('main.register') }}" class="btn btn-primary">Начать обучение</a>
+    {% else %}
+        <a href="{{ url_for('main.dashboard') }}" class="btn btn-primary">Продолжить обучение</a>
+    {% endif %}
+</div>
+
+<div class="lessons-list">
+    <h2>Программа обучения</h2>
+    <div class="lessons-grid">
+        {% for lesson in lessons %}
+            <a href="{{ url_for('main.lesson', slug=lesson.slug) }}" class="lesson-card">
+                <span class="lesson-number">{{ lesson.order }}</span>
+                <h3>{{ lesson.title }}</h3>
+                {% if lesson.interactive_task %}
+                    <span class="badge">Интерактив</span>
+                {% endif %}
+            </a>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}

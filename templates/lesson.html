@@ -1,0 +1,91 @@
+{% extends "base.html" %}
+
+{% block title %}{{ lesson.title }} - GitLearn{% endblock %}
+
+{% block content %}
+<div class="lesson-container">
+    <div class="lesson-nav">
+        {% if prev_lesson %}
+            <a href="{{ url_for('main.lesson', slug=prev_lesson.slug) }}" class="btn btn-secondary">&larr; Назад</a>
+        {% else %}
+            <span></span>
+        {% endif %}
+        <a href="{{ url_for('main.index') }}" class="btn btn-text">Все уроки</a>
+        {% if next_lesson %}
+            <a href="{{ url_for('main.lesson', slug=next_lesson.slug) }}" class="btn btn-secondary">Вперёд &rarr;</a>
+        {% else %}
+            <span></span>
+        {% endif %}
+    </div>
+
+    <article class="lesson-content">
+        <h1>{{ lesson.title }}</h1>
+        {{ lesson.content | safe }}
+    </article>
+
+    {% if lesson.interactive_task and current_user.is_authenticated %}
+        <div class="interactive-section" data-lesson-id="{{ lesson.id }}" data-expected="{{ lesson.expected_output or '' }}">
+            <h2>Практическое задание</h2>
+            <p class="task-description">{{ lesson.interactive_task }}</p>
+            
+            <div class="terminal" id="terminal">
+                <div class="terminal-header">
+                    <span class="terminal-title">Git Terminal</span>
+                    <div class="terminal-buttons">
+                        <span class="terminal-btn close"></span>
+                        <span class="terminal-btn minimize"></span>
+                        <span class="terminal-btn maximize"></span>
+                    </div>
+                </div>
+                <div class="terminal-body" id="terminal-body">
+                    <div class="terminal-line">
+                        <span class="prompt">user@gitlearn:~$</span>
+                        <span class="output">Добро пожаловать в Git терминал!</span>
+                    </div>
+                    <div class="terminal-line">
+                        <span class="prompt">user@gitlearn:~$</span>
+                        <span class="output">Введите команду для выполнения задания</span>
+                    </div>
+                </div>
+                <div class="terminal-input-line">
+                    <span class="prompt">user@gitlearn:~$</span>
+                    <input type="text" id="terminal-input" class="terminal-input" autocomplete="off" spellcheck="false">
+                </div>
+            </div>
+            
+            <div id="feedback" class="feedback"></div>
+            
+            <button class="btn btn-primary" id="check-btn">Проверить команду</button>
+        </div>
+    {% endif %}
+
+    <div class="lesson-footer">
+        {% if current_user.is_authenticated %}
+            <button class="btn btn-success" id="complete-btn" data-lesson-id="{{ lesson.id }}">Отметить как пройденное</button>
+        {% else %}
+            <p class="login-prompt"><a href="{{ url_for('main.login') }}">Войдите</a>, чтобы сохранять прогресс</p>
+        {% endif %}
+    </div>
+
+    <div class="lesson-nav bottom">
+        {% if prev_lesson %}
+            <a href="{{ url_for('main.lesson', slug=prev_lesson.slug) }}" class="btn btn-secondary">&larr; Назад</a>
+        {% else %}
+            <span></span>
+        {% endif %}
+        {% if next_lesson %}
+            <a href="{{ url_for('main.lesson', slug=next_lesson.slug) }}" class="btn btn-secondary">Вперёд &rarr;</a>
+        {% else %}
+            <span></span>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    const LESSON_ID = {{ lesson.id }};
+    const EXPECTED_OUTPUT = "{{ lesson.expected_output or '' }}";
+    const IS_AUTHENTICATED = {{ 'true' if current_user.is_authenticated else 'false' }};
+</script>
+{% endblock %}
