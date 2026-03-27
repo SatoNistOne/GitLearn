@@ -60,21 +60,36 @@
 
     <div class="learning-progress">
         <h2>Прогресс обучения</h2>
-        
+
         <div class="current-stage">
             <h3>Текущий этап</h3>
             {% if current_lesson %}
                 <div class="stage-card">
                     <div class="stage-info">
-                        <span class="stage-number">Урок {{ current_lesson.order }}</span>
+                        <div class="stage-header">
+                            <span class="stage-number">Урок {{ current_lesson.order }}</span>
+                            
+                            {% if is_completed %}
+                                <span class="stage-badge completed">✓ Пройден</span>
+                            {% else %}
+                                <span class="stage-step">Шаг {{ current_step_num }}</span>
+                            {% endif %}
+                            
+                        </div>
                         <h4>{{ current_lesson.title }}</h4>
-                        <p>{{ current_lesson.description }}</p>
+                        <p class="stage-description">{{ current_lesson.description }}</p>
                     </div>
-                    <a href="{{ url_for('main.continue_lesson', slug=current_lesson.slug) }}" class="btn btn-primary">Продолжить</a>
+                    
+                    {% if is_completed %}
+                        <a href="{{ url_for('main.lesson', slug=current_lesson.slug) }}" class="btn btn-primary">Повторить</a>
+                    {% else %}
+                        <a href="{{ url_for('main.continue_lesson', slug=current_lesson.slug) }}" class="btn btn-primary">Продолжить</a>
+                    {% endif %}
+                    
                 </div>
             {% else %}
                 <div class="stage-card empty">
-                    <p>Вы ещё не начали обучение или прошли все уроки</p>
+                    <p>Вы ещё не начали обучение</p>
                     <a href="{{ url_for('main.index') }}" class="btn btn-primary">Начать обучение</a>
                 </div>
             {% endif %}

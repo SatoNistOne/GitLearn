@@ -76,23 +76,54 @@ def profile():
     lessons = Lesson.query.order_by(Lesson.order).all()
     completed_lessons = UserProgress.query.filter_by(user_id=current_user.id, completed=True).count()
     total_lessons = len(lessons)
-    
+
     current_lesson = None
-    in_progress = UserProgress.query.filter_by(user_id=current_user.id, completed=False).filter(UserProgress.current_step_id != None).first()
-    if in_progress:
-        current_lesson = Lesson.query.get(in_progress.lesson_id)
-    
+    current_step_num = 0
+    is_completed = False
+
+    # 1. Сначала ищем последний ПРОЙДЕННЫЙ урок
+    # Используем Attempt для определения последнего завершённого урока
+    last_attempt = Attempt.query.filter_by(
+        user_id=current_user.id,
+        is_correct=True
+    ).order_by(Attempt.created_at.desc()).first()
+
+    if last_attempt:
+        # Проверяем, завершён ли этот урок
+        progress = UserProgress.query.filter_by(
+            user_id=current_user.id,
+            lesson_id=last_attempt.lesson_id,
+            completed=True
+        ).first()
+        
+        if progress:
+            current_lesson = Lesson.query.get(last_attempt.lesson_id)
+            is_completed = True
+
+    # 2. Если нет пройденных, ищем урок В ПРОЦЕССЕ
+    if not current_lesson:
+        in_progress = UserProgress.query.filter_by(
+            user_id=current_user.id, 
+            completed=False
+        ).filter(UserProgress.current_step_id != None).first()
+        
+        if in_progress:
+            current_lesson = Lesson.query.get(in_progress.lesson_id)
+            current_step = LessonStep.query.get(in_progress.current_step_id)
+            if current_step:
+                current_step_num = current_step.order
+
     xp_current = current_user.total_experience
     xp_needed = 100
     level = 1
     temp_xp = xp_current
-    
+
     while temp_xp >= xp_needed:
         temp_xp -= xp_needed
         level += 1
         xp_current = temp_xp
         xp_needed = int(xp_needed * 1.5)
-    
+
     xp_percentage = (xp_current / xp_needed * 100) if xp_needed > 0 else 0
 
     # Упрощённый запрос без user_hint (может не быть на старых БД)
@@ -112,6 +143,8 @@ def profile():
         completed_lessons=completed_lessons,
         total_lessons=total_lessons,
         current_lesson=current_lesson,
+        current_step_num=current_step_num,
+        is_completed=is_completed,
         xp_current=xp_current,
         xp_needed=xp_needed,
         xp_percentage=xp_percentage,

@@ -4,35 +4,36 @@
 
 {% block content %}
 <div class="lesson-container">
-    <div class="lesson-header">
+    <article class="lesson-content">
+        <div class="lesson-title-section">
+            <span class="lesson-number-badge">{{ lesson.order }}</span>
+            <div class="lesson-title-wrapper">
+                <h1>{{ lesson.title }}</h1>
+                {% if lesson.description %}
+                    <p class="lesson-description">{{ lesson.description }}</p>
+                {% endif %}
+            </div>
+        </div>
+    </article>
+
+    <div class="lesson-nav-wrapper">
         <div class="lesson-nav">
             {% if prev_lesson %}
                 <a href="{{ url_for('main.lesson', slug=prev_lesson.slug) }}" class="btn btn-secondary">&larr; Назад</a>
-            {% else %}
-                <span></span>
             {% endif %}
             <a href="{{ url_for('main.index') }}" class="btn btn-text">Все уроки</a>
             {% if next_lesson %}
-                <a href="{{ url_for('main.lesson', slug=next_lesson.slug) }}" class="btn btn-secondary">Вперёд &rarr;</a>
-            {% else %}
-                <span></span>
+                <a href="{{ url_for('main.lesson', slug=next_lesson.slug) }}" class="btn btn-primary">Вперёд &rarr;</a>
             {% endif %}
         </div>
     </div>
-
-    <article class="lesson-content">
-        <h1>{{ lesson.title }}</h1>
-        {% if lesson.description %}
-            <p class="lesson-description">{{ lesson.description }}</p>
-        {% endif %}
-    </article>
 
     <div class="steps-container">
         {% for step in steps %}
             <div class="step-section" id="step-{{ step.id }}" data-step-id="{{ step.id }}" data-step-order="{{ step.order }}" data-points="{{ step.points }}">
                 <h2 class="step-title">
                     <span class="step-number">{{ step.order }}</span>
-                    {{ step.title }}
+                    <span class="step-title-text">{{ step.title }}</span>
                 </h2>
                 
                 <div class="step-content">
@@ -104,28 +105,30 @@
         {% endfor %}
     </div>
 
-    <div class="lesson-footer">
-        {% if current_user.is_authenticated %}
-            {% if user_progress and not user_progress.completed and continue_step_id %}
-                <a href="{{ url_for('main.continue_lesson', slug=lesson.slug) }}" class="btn btn-success">Продолжить с этапа {{ user_progress.current_step }}</a>
+    <div class="lesson-footer-nav">
+        <div class="footer-nav-left">
+            {% if prev_lesson %}
+                <a href="{{ url_for('main.lesson', slug=prev_lesson.slug) }}" class="btn btn-secondary">&larr; Назад</a>
+            {% else %}
+                <span class="btn btn-secondary disabled">Назад</span>
             {% endif %}
-            <button class="btn btn-success" id="complete-btn" data-lesson-id="{{ lesson.id }}">Отметить как пройденное</button>
-        {% else %}
-            <p class="login-prompt"><a href="{{ url_for('main.login') }}">Войдите</a>, чтобы сохранять прогресс</p>
-        {% endif %}
-    </div>
-
-    <div class="lesson-nav bottom">
-        {% if prev_lesson %}
-            <a href="{{ url_for('main.lesson', slug=prev_lesson.slug) }}" class="btn btn-secondary">&larr; Назад</a>
-        {% else %}
-            <span></span>
-        {% endif %}
-        {% if next_lesson %}
-            <a href="{{ url_for('main.lesson', slug=next_lesson.slug) }}" class="btn btn-secondary">Вперёд &rarr;</a>
-        {% else %}
-            <span></span>
-        {% endif %}
+        </div>
+        
+        <div class="footer-nav-center">
+            {% if current_user.is_authenticated %}
+                <button class="btn btn-success" id="complete-btn" data-lesson-id="{{ lesson.id }}">Отметить как пройденное</button>
+            {% else %}
+                <p class="login-prompt"><a href="{{ url_for('main.login') }}">Войдите</a>, чтобы сохранять прогресс</p>
+            {% endif %}
+        </div>
+        
+        <div class="footer-nav-right">
+            {% if next_lesson %}
+                <a href="{{ url_for('main.lesson', slug=next_lesson.slug) }}" class="btn btn-primary">Вперёд &rarr;</a>
+            {% else %}
+                <span class="btn btn-primary disabled">Вперёд</span>
+            {% endif %}
+        </div>
     </div>
 </div>
 {% endblock %}
