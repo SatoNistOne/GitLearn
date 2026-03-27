@@ -1,0 +1,17 @@
+__pycache__/
+*.pyc
+*.pyo
+*.db
+.git
+.gitignore
+instance/*.db
+.env
+.env.local
+.vscode/
+.idea/
+*.swp
+*.swo
+.DS_Store
+Thumbs.db
+smirnov_backup/
+*.log

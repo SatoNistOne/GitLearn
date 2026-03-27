@@ -19,7 +19,7 @@ services:
   web:
     build: .
     container_name: gitlearn_web
-    command: python run.py
+    command: gunicorn -w 4 -b 0.0.0.0:5000 run:app
     volumes:
       - .:/app
     expose:
@@ -27,6 +27,7 @@ services:
     environment:
       DATABASE_URL: postgresql://gituser:gitpass@db:5432/gitlearn
       SECRET_KEY: super-secret-key-for-git-learn-app
+    restart: unless-stopped
     depends_on:
       db:
         condition: service_healthy
@@ -38,6 +39,7 @@ services:
       - "80:80"
     volumes:
       - ./nginx.conf:/etc/nginx/conf.d/default.conf
+    restart: unless-stopped
     depends_on:
       - web
 
