@@ -97,7 +97,7 @@ class QuizAnswer(db.Model):
 
 class UserProgress(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False, index=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False, index=True)
     lesson_id = db.Column(db.Integer, db.ForeignKey('lesson.id'), nullable=False, index=True)
     status = db.Column(db.String(20), default='not_started')
     completed = db.Column(db.Boolean, default=False)
@@ -116,7 +116,7 @@ class UserProgress(db.Model):
 
 class Attempt(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False, index=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False, index=True)
     lesson_id = db.Column(db.Integer, db.ForeignKey('lesson.id'), nullable=False, index=True)
     step_id = db.Column(db.Integer, db.ForeignKey('lesson_step.id'), nullable=True, index=True)
     input_command = db.Column(db.Text)
@@ -130,7 +130,7 @@ class Attempt(db.Model):
 
 class QuizAttempt(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False, index=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False, index=True)
     lesson_id = db.Column(db.Integer, db.ForeignKey('lesson.id'), nullable=False, index=True)
     question_id = db.Column(db.Integer, db.ForeignKey('quiz_question.id'), nullable=False, index=True)
     selected_answer_id = db.Column(db.Integer, db.ForeignKey('quiz_answer.id'))
@@ -140,7 +140,7 @@ class QuizAttempt(db.Model):
 
 class UserActionLog(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False, index=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False, index=True)
     action_type = db.Column(db.String(50), nullable=False, index=True)
     lesson_id = db.Column(db.Integer, db.ForeignKey('lesson.id'), nullable=True, index=True)
     step_id = db.Column(db.Integer, db.ForeignKey('lesson_step.id'), nullable=True)
@@ -150,7 +150,7 @@ class UserActionLog(db.Model):
 
 class UserHint(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False, index=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False, index=True)
     lesson_id = db.Column(db.Integer, db.ForeignKey('lesson.id'), nullable=False, index=True)
     hint_id = db.Column(db.Integer, db.ForeignKey('hint.id'), nullable=False)
     used_at = db.Column(db.DateTime, default=datetime.utcnow)
