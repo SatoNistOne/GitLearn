@@ -1,4 +1,3 @@
-import os
 from flask import Flask
 from flask_login import LoginManager
 from config import Config
@@ -11,8 +10,6 @@ def create_app():
         static_folder='../static'
     )
     app.config.from_object(Config)
-    app.config['JSON_AS_ASCII'] = False
-    app.jinja_env.ensure_ascii = False
 
     db.init_app(app)
 
@@ -35,7 +32,7 @@ def create_app():
     return app
 
 def init_lessons():
-    from app.models import Lesson, LessonStep, Hint, QuizQuestion, QuizAnswer, LessonAsset, db
+    from app.models import Lesson, LessonStep, Hint, QuizQuestion, QuizAnswer, db
     from app.lessons import LESSONS_DATA
 
     existing = Lesson.query.count()
@@ -45,9 +42,7 @@ def init_lessons():
                 title=lesson_data['title'],
                 slug=lesson_data['slug'],
                 description=lesson_data.get('description', ''),
-                order=lesson_data['order'],
-                difficulty=lesson_data.get('difficulty', 'beginner'),
-                estimated_time=lesson_data.get('estimated_time', 15)
+                order=lesson_data['order']
             )
             db.session.add(lesson)
             db.session.flush()
@@ -60,8 +55,7 @@ def init_lessons():
                     step_type=step_data['step_type'],
                     order=step_data['order'],
                     is_interactive=step_data.get('is_interactive', False),
-                    expected_command=step_data.get('expected_command'),
-                    points=step_data.get('points', 10)
+                    expected_command=step_data.get('expected_command')
                 )
                 db.session.add(step)
 
@@ -70,8 +64,7 @@ def init_lessons():
                     lesson_id=lesson.id,
                     step_id=hint_data.get('step_id'),
                     content=hint_data['content'],
-                    hint_order=hint_data.get('hint_order', 1),
-                    penalty_points=hint_data.get('penalty_points', 5)
+                    hint_order=hint_data.get('hint_order', 1)
                 )
                 db.session.add(hint)
 
@@ -79,7 +72,6 @@ def init_lessons():
                 question = QuizQuestion(
                     lesson_id=lesson.id,
                     question_text=quiz_data['question_text'],
-                    question_type=quiz_data.get('question_type', 'multiple_choice'),
                     points=quiz_data.get('points', 10),
                     order=quiz_data['order']
                 )
@@ -90,19 +82,8 @@ def init_lessons():
                     answer = QuizAnswer(
                         question_id=question.id,
                         answer_text=answer_data['answer_text'],
-                        is_correct=answer_data['is_correct'],
-                        order=answer_data.get('order', 0)
+                        is_correct=answer_data['is_correct']
                     )
                     db.session.add(answer)
-
-            for asset_data in lesson_data.get('assets', []):
-                asset = LessonAsset(
-                    lesson_id=lesson.id,
-                    asset_type=asset_data['asset_type'],
-                    title=asset_data['title'],
-                    content=asset_data['content'],
-                    order=asset_data.get('order', 0)
-                )
-                db.session.add(asset)
 
         db.session.commit()

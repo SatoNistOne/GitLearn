@@ -50,9 +50,6 @@ LESSONS_DATA = [
                     {'answer_text': 'База данных', 'is_correct': False, 'order': 4}
                 ]
             }
-        ],
-        'assets': [
-            {'asset_type': 'cheatsheet', 'title': 'Шпаргалка по Git', 'content': 'Git — система контроля версий', 'order': 1}
         ]
     },
     {
@@ -260,7 +257,20 @@ git commit -am "Описание"
         'hints': [
             {'step_id': 2, 'content': 'Команда состоит из двух слов', 'hint_order': 1, 'penalty_points': 5}
         ],
-        'quiz_questions': [],
+        'quiz_questions': [
+            {
+                'question_text': 'Что показывает команда git status?',
+                'question_type': 'multiple_choice',
+                'points': 10,
+                'order': 1,
+                'answers': [
+                    {'answer_text': 'Текущее состояние репозитория', 'is_correct': True, 'order': 1},
+                    {'answer_text': 'Историю коммитов', 'is_correct': False, 'order': 2},
+                    {'answer_text': 'Список веток', 'is_correct': False, 'order': 3},
+                    {'answer_text': 'Размер файлов', 'is_correct': False, 'order': 4}
+                ]
+            }
+        ],
         'assets': []
     },
     {
@@ -307,7 +317,20 @@ git log -5           # Последние 5 коммитов
             {'step_id': 3, 'content': 'Используйте git log с флагом', 'hint_order': 1, 'penalty_points': 5},
             {'step_id': 3, 'content': 'git log --oneline', 'hint_order': 2, 'penalty_points': 10}
         ],
-        'quiz_questions': [],
+        'quiz_questions': [
+            {
+                'question_text': 'Какая команда показывает историю коммитов?',
+                'question_type': 'multiple_choice',
+                'points': 10,
+                'order': 1,
+                'answers': [
+                    {'answer_text': 'git log', 'is_correct': True, 'order': 1},
+                    {'answer_text': 'git history', 'is_correct': False, 'order': 2},
+                    {'answer_text': 'git show', 'is_correct': False, 'order': 3},
+                    {'answer_text': 'git list', 'is_correct': False, 'order': 4}
+                ]
+            }
+        ],
         'assets': []
     },
     {
@@ -387,7 +410,20 @@ git branch -d feature   # Удалить ветку
             {'step_id': 2, 'content': 'Используйте команду git checkout', 'hint_order': 1, 'penalty_points': 5},
             {'step_id': 2, 'content': 'git checkout main', 'hint_order': 2, 'penalty_points': 10}
         ],
-        'quiz_questions': [],
+        'quiz_questions': [
+            {
+                'question_text': 'Какая команда переключает между ветками?',
+                'question_type': 'multiple_choice',
+                'points': 10,
+                'order': 1,
+                'answers': [
+                    {'answer_text': 'git checkout', 'is_correct': True, 'order': 1},
+                    {'answer_text': 'git switch', 'is_correct': False, 'order': 2},
+                    {'answer_text': 'git change', 'is_correct': False, 'order': 3},
+                    {'answer_text': 'git move', 'is_correct': False, 'order': 4}
+                ]
+            }
+        ],
         'assets': []
     },
     {
@@ -420,7 +456,20 @@ git branch -d feature   # Удалить ветку
             {'step_id': 2, 'content': 'Используйте команду git merge', 'hint_order': 1, 'penalty_points': 5},
             {'step_id': 2, 'content': 'git merge feature', 'hint_order': 2, 'penalty_points': 10}
         ],
-        'quiz_questions': [],
+        'quiz_questions': [
+            {
+                'question_text': 'Что происходит при слиянии веток?',
+                'question_type': 'multiple_choice',
+                'points': 10,
+                'order': 1,
+                'answers': [
+                    {'answer_text': 'Объединение изменений', 'is_correct': True, 'order': 1},
+                    {'answer_text': 'Удаление ветки', 'is_correct': False, 'order': 2},
+                    {'answer_text': 'Копирование файлов', 'is_correct': False, 'order': 3},
+                    {'answer_text': 'Создание коммита', 'is_correct': False, 'order': 4}
+                ]
+            }
+        ],
         'assets': []
     },
     {
@@ -455,7 +504,32 @@ git reset --hard HEAD~1   # Полностью отменить
             }
         ],
         'hints': [],
-        'quiz_questions': [],
+        'quiz_questions': [
+            {
+                'question_text': 'Какая команда безопасно отменяет коммит?',
+                'question_type': 'multiple_choice',
+                'points': 10,
+                'order': 1,
+                'answers': [
+                    {'answer_text': 'git revert', 'is_correct': True, 'order': 1},
+                    {'answer_text': 'git reset --hard', 'is_correct': False, 'order': 2},
+                    {'answer_text': 'git delete', 'is_correct': False, 'order': 3},
+                    {'answer_text': 'git remove', 'is_correct': False, 'order': 4}
+                ]
+            },
+            {
+                'question_text': 'Что делает git reset --hard HEAD~1?',
+                'question_type': 'multiple_choice',
+                'points': 10,
+                'order': 2,
+                'answers': [
+                    {'answer_text': 'Полностью отменяет изменения', 'is_correct': True, 'order': 1},
+                    {'answer_text': 'Сохраняет изменения в индексе', 'is_correct': False, 'order': 2},
+                    {'answer_text': 'Создаёт новый коммит', 'is_correct': False, 'order': 3},
+                    {'answer_text': 'Показывает историю', 'is_correct': False, 'order': 4}
+                ]
+            }
+        ],
         'assets': []
     },
     {
@@ -488,7 +562,20 @@ git reset --hard HEAD~1   # Полностью отменить
             {'step_id': 2, 'content': 'Используйте команду git remote add', 'hint_order': 1, 'penalty_points': 5},
             {'step_id': 2, 'content': 'git remote add origin https://github.com/user/repo.git', 'hint_order': 2, 'penalty_points': 10}
         ],
-        'quiz_questions': [],
+        'quiz_questions': [
+            {
+                'question_text': 'Что такое удалённый репозиторий?',
+                'question_type': 'multiple_choice',
+                'points': 10,
+                'order': 1,
+                'answers': [
+                    {'answer_text': 'Репозиторий на сервере (GitHub)', 'is_correct': True, 'order': 1},
+                    {'answer_text': 'Локальная папка', 'is_correct': False, 'order': 2},
+                    {'answer_text': 'Ветка в Git', 'is_correct': False, 'order': 3},
+                    {'answer_text': 'Файл .gitignore', 'is_correct': False, 'order': 4}
+                ]
+            }
+        ],
         'assets': []
     },
     {
@@ -521,7 +608,20 @@ git reset --hard HEAD~1   # Полностью отменить
             {'step_id': 2, 'content': 'Используйте команду git push', 'hint_order': 1, 'penalty_points': 5},
             {'step_id': 2, 'content': 'git push origin main', 'hint_order': 2, 'penalty_points': 10}
         ],
-        'quiz_questions': [],
+        'quiz_questions': [
+            {
+                'question_text': 'Что делает команда git push?',
+                'question_type': 'multiple_choice',
+                'points': 10,
+                'order': 1,
+                'answers': [
+                    {'answer_text': 'Отправляет изменения на сервер', 'is_correct': True, 'order': 1},
+                    {'answer_text': 'Скачивает изменения', 'is_correct': False, 'order': 2},
+                    {'answer_text': 'Создаёт коммит', 'is_correct': False, 'order': 3},
+                    {'answer_text': 'Удаляет ветку', 'is_correct': False, 'order': 4}
+                ]
+            }
+        ],
         'assets': []
     },
     {
@@ -554,7 +654,20 @@ git reset --hard HEAD~1   # Полностью отменить
             {'step_id': 2, 'content': 'Используйте команду git pull', 'hint_order': 1, 'penalty_points': 5},
             {'step_id': 2, 'content': 'git pull origin main', 'hint_order': 2, 'penalty_points': 10}
         ],
-        'quiz_questions': [],
+        'quiz_questions': [
+            {
+                'question_text': 'В чём разница между git fetch и git pull?',
+                'question_type': 'multiple_choice',
+                'points': 10,
+                'order': 1,
+                'answers': [
+                    {'answer_text': 'pull = fetch + merge', 'is_correct': True, 'order': 1},
+                    {'answer_text': 'Это одно и то же', 'is_correct': False, 'order': 2},
+                    {'answer_text': 'fetch удаляет файлы', 'is_correct': False, 'order': 3},
+                    {'answer_text': 'pull создаёт ветку', 'is_correct': False, 'order': 4}
+                ]
+            }
+        ],
         'assets': []
     },
     {
@@ -1059,7 +1172,68 @@ git fetch origin branch      # Получить конкретную ветку
         'hints': [
             {'step_id': 3, 'content': 'Используйте команду git fetch', 'hint_order': 1, 'penalty_points': 5}
         ],
-        'quiz_questions': [],
+        'quiz_questions': [
+            {
+                'question_text': 'Финальный тест: Какая команда используется для отправки изменений на сервер?',
+                'question_type': 'multiple_choice',
+                'points': 10,
+                'order': 1,
+                'answers': [
+                    {'answer_text': 'git push', 'is_correct': True, 'order': 1},
+                    {'answer_text': 'git pull', 'is_correct': False, 'order': 2},
+                    {'answer_text': 'git fetch', 'is_correct': False, 'order': 3},
+                    {'answer_text': 'git commit', 'is_correct': False, 'order': 4}
+                ]
+            },
+            {
+                'question_text': 'Что такое ветка (branch) в Git?',
+                'question_type': 'multiple_choice',
+                'points': 10,
+                'order': 2,
+                'answers': [
+                    {'answer_text': 'Независимая линия разработки', 'is_correct': True, 'order': 1},
+                    {'answer_text': 'Копия файла', 'is_correct': False, 'order': 2},
+                    {'answer_text': 'История коммитов', 'is_correct': False, 'order': 3},
+                    {'answer_text': 'Удалённый репозиторий', 'is_correct': False, 'order': 4}
+                ]
+            },
+            {
+                'question_text': 'Какая команда объединяет изменения из двух веток?',
+                'question_type': 'multiple_choice',
+                'points': 10,
+                'order': 3,
+                'answers': [
+                    {'answer_text': 'git merge', 'is_correct': True, 'order': 1},
+                    {'answer_text': 'git join', 'is_correct': False, 'order': 2},
+                    {'answer_text': 'git combine', 'is_correct': False, 'order': 3},
+                    {'answer_text': 'git connect', 'is_correct': False, 'order': 4}
+                ]
+            },
+            {
+                'question_text': 'Для чего нужен файл .gitignore?',
+                'question_type': 'multiple_choice',
+                'points': 10,
+                'order': 4,
+                'answers': [
+                    {'answer_text': 'Исключить файлы из отслеживания', 'is_correct': True, 'order': 1},
+                    {'answer_text': 'Создать новый репозиторий', 'is_correct': False, 'order': 2},
+                    {'answer_text': 'Переименовать файлы', 'is_correct': False, 'order': 3},
+                    {'answer_text': 'Удалить историю', 'is_correct': False, 'order': 4}
+                ]
+            },
+            {
+                'question_text': 'Что такое коммит?',
+                'question_type': 'multiple_choice',
+                'points': 10,
+                'order': 5,
+                'answers': [
+                    {'answer_text': 'Сохранение изменений в истории', 'is_correct': True, 'order': 1},
+                    {'answer_text': 'Удаление файлов', 'is_correct': False, 'order': 2},
+                    {'answer_text': 'Создание ветки', 'is_correct': False, 'order': 3},
+                    {'answer_text': 'Отправка на сервер', 'is_correct': False, 'order': 4}
+                ]
+            }
+        ],
         'assets': []
     }
 ]

@@ -6,7 +6,6 @@ document.addEventListener('DOMContentLoaded', function() {
     const terminalInputs = document.querySelectorAll('.terminal-input');
 
     let commandHistories = {};
-    let stepStartTime = {};
 
     if (CONTINUE_STEP_ID && IS_AUTHENTICATED) {
         const stepElement = document.getElementById('step-' + CONTINUE_STEP_ID);
@@ -19,7 +18,6 @@ document.addEventListener('DOMContentLoaded', function() {
     terminalInputs.forEach(input => {
         const stepId = input.dataset.stepId;
         commandHistories[stepId] = [];
-        stepStartTime[stepId] = Date.now();
 
         input.addEventListener('keydown', function(e) {
             if (e.key === 'Enter') {

@@ -1,4 +1,4 @@
-from flask import Blueprint, render_template, redirect, url_for, flash, request, jsonify, session
+from flask import Blueprint, render_template, redirect, url_for, flash, request, jsonify
 from flask_login import login_user, logout_user, login_required, current_user
 from app.models import db, User, Lesson, UserProgress, LessonStep, Attempt, Hint, QuizQuestion, QuizAnswer, UserActionLog, UserHint, QuizAttempt
 from app.forms import LoginForm, RegisterForm
@@ -145,7 +145,6 @@ def lesson(slug):
         if len(interactive_steps) == 0 and not user_progress.completed:
             user_progress.completed = True
             user_progress.completed_at = datetime.utcnow()
-            user_progress.status = 'completed'
             db.session.commit()
     
     prev_lesson = Lesson.query.filter(Lesson.order < lesson.order).order_by(Lesson.order.desc()).first()
@@ -174,9 +173,7 @@ def update_progress():
     data = request.get_json()
     lesson_id = data.get('lesson_id')
     completed = data.get('completed', False)
-    current_step = data.get('current_step', 0)
     current_step_id = data.get('current_step_id')
-    time_spent = data.get('time_spent', 0)
 
     progress = UserProgress.query.filter_by(user_id=current_user.id, lesson_id=lesson_id).first()
     if not progress:
@@ -184,16 +181,9 @@ def update_progress():
         db.session.add(progress)
 
     progress.completed = completed
-    progress.current_step = current_step
     if current_step_id:
         progress.current_step_id = current_step_id
-    progress.time_spent += time_spent
-    progress.last_accessed_at = datetime.utcnow()
-    
-    if completed and not progress.completed_at:
-        progress.completed_at = datetime.utcnow()
-        progress.status = 'completed'
-    
+
     db.session.commit()
     return jsonify({'status': 'success'})
 
@@ -205,47 +195,43 @@ def verify_command():
     expected = data.get('expected', '').strip()
     lesson_id = data.get('lesson_id')
     step_id = data.get('step_id')
-    time_taken = data.get('time_taken', 0)
 
     is_correct = user_command.lower() == expected.lower() if expected else True
-    
+
     attempt = Attempt(
         user_id=current_user.id,
         lesson_id=lesson_id,
         step_id=step_id,
         input_command=user_command,
-        expected_command=expected,
-        is_correct=is_correct,
-        time_taken=time_taken
+        is_correct=is_correct
     )
     db.session.add(attempt)
-    
+
     if is_correct:
         progress = UserProgress.query.filter_by(user_id=current_user.id, lesson_id=lesson_id).first()
         if progress:
             progress.total_attempts += 1
             progress.correct_attempts += 1
             progress.current_step_id = step_id
-            
+
             steps = LessonStep.query.filter_by(lesson_id=lesson_id).all()
             interactive_steps = [s for s in steps if s.is_interactive]
-            
+
             if len(interactive_steps) > 0:
                 completed_interactive = Attempt.query.filter_by(
                     user_id=current_user.id,
                     lesson_id=lesson_id,
                     is_correct=True
                 ).count()
-                
+
                 if completed_interactive >= len(interactive_steps):
                     progress.completed = True
                     progress.completed_at = datetime.utcnow()
-                    progress.status = 'completed'
-            
+
             user = User.query.get(current_user.id)
             if user:
                 user.total_experience += 10
-        log = UserActionLog(user_id=current_user.id, lesson_id=lesson_id, step_id=step_id, action_type='step_completed')
+        log = UserActionLog(user_id=current_user.id, lesson_id=lesson_id, action_type='step_completed')
         db.session.add(log)
     else:
         progress = UserProgress.query.filter_by(user_id=current_user.id, lesson_id=lesson_id).first()
@@ -259,8 +245,8 @@ def verify_command():
         progress = UserProgress.query.filter_by(user_id=current_user.id, lesson_id=lesson_id).first()
         lesson_completed = progress.completed if progress else False
         return jsonify({
-            'correct': True, 
-            'message': 'Верно! Команда выполнена правильно.', 
+            'correct': True,
+            'message': 'Верно! Команда выполнена правильно.',
             'points': 10,
             'lesson_completed': lesson_completed
         })
@@ -291,7 +277,7 @@ def use_hint(lesson_id, step_order):
     if progress:
         progress.hints_used += 1
 
-    log = UserActionLog(user_id=current_user.id, lesson_id=lesson_id, action_type='hint_used', details=f'Hint ID: {hint.id}')
+    log = UserActionLog(user_id=current_user.id, lesson_id=lesson_id, action_type='hint_used')
     db.session.add(log)
 
     db.session.commit()
@@ -305,53 +291,48 @@ def submit_quiz_answer():
     answer_id = data.get('answer_id')
     lesson_id = data.get('lesson_id')
     step_id = data.get('step_id')
-    time_taken = data.get('time_taken', 0)
-    
+
     question = QuizQuestion.query.get_or_404(question_id)
     selected_answer = QuizAnswer.query.get_or_404(answer_id)
-    
+
     is_correct = selected_answer.is_correct
-    
+
     quiz_attempt = QuizAttempt(
         user_id=current_user.id,
         lesson_id=lesson_id,
         question_id=question_id,
         selected_answer_id=answer_id,
-        is_correct=is_correct,
-        time_taken=time_taken
+        is_correct=is_correct
     )
     db.session.add(quiz_attempt)
-    
+
     progress = UserProgress.query.filter_by(user_id=current_user.id, lesson_id=lesson_id).first()
     lesson_completed = False
-    
-    if progress:
-        if is_correct:
-            progress.quiz_score += question.points
-            progress.current_step_id = step_id
-            
-            all_correct = QuizAttempt.query.filter_by(
-                user_id=current_user.id,
-                lesson_id=lesson_id
-            ).all()
-            
-            lesson_questions = QuizQuestion.query.filter_by(lesson_id=lesson_id).all()
-            correct_count = sum(1 for a in all_correct if a.is_correct)
-            
-            if correct_count >= len(lesson_questions):
-                progress.completed = True
-                progress.completed_at = datetime.utcnow()
-                progress.status = 'completed'
-                lesson_completed = True
-        
+
+    if progress and is_correct:
+        progress.current_step_id = step_id
+
+        all_correct = QuizAttempt.query.filter_by(
+            user_id=current_user.id,
+            lesson_id=lesson_id
+        ).all()
+
+        lesson_questions = QuizQuestion.query.filter_by(lesson_id=lesson_id).all()
+        correct_count = sum(1 for a in all_correct if a.is_correct)
+
+        if correct_count >= len(lesson_questions):
+            progress.completed = True
+            progress.completed_at = datetime.utcnow()
+            lesson_completed = True
+
         user = User.query.get(current_user.id)
-        if user and is_correct:
+        if user:
             user.total_experience += question.points
-    
+
     db.session.commit()
-    
+
     return jsonify({
-        'correct': is_correct, 
+        'correct': is_correct,
         'points': question.points if is_correct else 0,
         'lesson_completed': lesson_completed
     })
