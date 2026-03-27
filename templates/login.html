@@ -8,9 +8,9 @@
     <form method="POST">
         {{ form.hidden_tag() }}
         <div class="form-group">
-            {{ form.username.label }}
-            {{ form.username() }}
-            {% for error in form.username.errors %}
+            {{ form.username_or_email.label }}
+            {{ form.username_or_email() }}
+            {% for error in form.username_or_email.errors %}
                 <span class="error">{{ error }}</span>
             {% endfor %}
         </div>

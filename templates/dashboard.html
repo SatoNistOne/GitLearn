@@ -5,11 +5,46 @@
 {% block content %}
 <div class="dashboard">
     <h2>Ваш прогресс</h2>
+    
+    <div class="stats-grid">
+        <div class="stat-card">
+            <div class="stat-details">
+                <div class="stat-value">{{ completed_count }}</div>
+                <div class="stat-label">Пройдено уроков</div>
+            </div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-details">
+                <div class="stat-value">{{ interactive_attempts }}</div>
+                <div class="stat-label">Попыток</div>
+            </div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-details">
+                <div class="stat-value">{{ current_user.total_experience }}</div>
+                <div class="stat-label">Опыт</div>
+            </div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-details">
+                <div class="stat-value">{{ current_user.streak_days }}</div>
+                <div class="stat-label">Серия дней</div>
+            </div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-details">
+                <div class="stat-value">{{ current_user.level }}</div>
+                <div class="stat-label">Уровень</div>
+            </div>
+        </div>
+    </div>
+
     <div class="progress-summary">
         <div class="progress-bar-container">
             <div class="progress-bar" style="width: {{ (completed_count / total_count * 100) if total_count > 0 else 0 }}%"></div>
         </div>
         <p>Пройдено {{ completed_count }} из {{ total_count }} уроков</p>
+        <p class="remaining-text">Осталось пройти: {{ total_count - completed_count }} уроков</p>
     </div>
 
     <div class="lessons-table">
@@ -19,6 +54,7 @@
                     <th>№</th>
                     <th>Урок</th>
                     <th>Статус</th>
+                    <th>Подсказки</th>
                     <th>Действие</th>
                 </tr>
             </thead>
@@ -26,18 +62,49 @@
                 {% for lesson in lessons %}
                     <tr>
                         <td>{{ lesson.order }}</td>
-                        <td>{{ lesson.title }}</td>
+                        <td>
+                            <div class="lesson-name-cell">
+                                <span class="lesson-title">{{ lesson.title }}</span>
+                                {% if lesson.description %}
+                                    <span class="lesson-desc">{{ lesson.description }}</span>
+                                {% endif %}
+                            </div>
+                        </td>
                         <td>
                             {% if lesson.id in progress and progress[lesson.id].completed %}
                                 <span class="status completed">Пройден</span>
+                            {% elif lesson.id in progress and progress[lesson.id].current_step > 0 %}
+                                <span class="status in_progress">В процессе</span>
                             {% else %}
-                                <span class="status pending">В процессе</span>
+                                <span class="status pending">Не начат</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            {% if lesson.id in progress %}
+                                {% set hint_count = progress[lesson.id].hints_used %}
+                                {% if progress[lesson.id].completed %}
+                                    {% if hint_count == 0 %}
+                                        <span class="hints-praise">Молодец!</span>
+                                    {% elif hint_count == 1 %}
+                                        <span class="hints-used">{{ hint_count }} подсказка</span>
+                                    {% elif hint_count >= 2 and hint_count <= 4 %}
+                                        <span class="hints-used">{{ hint_count }} подсказки</span>
+                                    {% else %}
+                                        <span class="hints-used">{{ hint_count }} подсказок</span>
+                                    {% endif %}
+                                {% else %}
+                                    <span class="hints-not-completed">Не пройдено</span>
+                                {% endif %}
+                            {% else %}
+                                <span class="hints-none">-</span>
                             {% endif %}
                         </td>
                         <td>
                             <a href="{{ url_for('main.lesson', slug=lesson.slug) }}" class="btn btn-small">
                                 {% if lesson.id in progress and progress[lesson.id].completed %}
                                     Повторить
+                                {% elif lesson.id in progress and progress[lesson.id].current_step > 0 %}
+                                    Продолжить
                                 {% else %}
                                     Начать
                                 {% endif %}

@@ -4,63 +4,111 @@
 
 {% block content %}
 <div class="lesson-container">
-    <div class="lesson-nav">
-        {% if prev_lesson %}
-            <a href="{{ url_for('main.lesson', slug=prev_lesson.slug) }}" class="btn btn-secondary">&larr; Назад</a>
-        {% else %}
-            <span></span>
-        {% endif %}
-        <a href="{{ url_for('main.index') }}" class="btn btn-text">Все уроки</a>
-        {% if next_lesson %}
-            <a href="{{ url_for('main.lesson', slug=next_lesson.slug) }}" class="btn btn-secondary">Вперёд &rarr;</a>
-        {% else %}
-            <span></span>
-        {% endif %}
+    <div class="lesson-header">
+        <div class="lesson-nav">
+            {% if prev_lesson %}
+                <a href="{{ url_for('main.lesson', slug=prev_lesson.slug) }}" class="btn btn-secondary">&larr; Назад</a>
+            {% else %}
+                <span></span>
+            {% endif %}
+            <a href="{{ url_for('main.index') }}" class="btn btn-text">Все уроки</a>
+            {% if next_lesson %}
+                <a href="{{ url_for('main.lesson', slug=next_lesson.slug) }}" class="btn btn-secondary">Вперёд &rarr;</a>
+            {% else %}
+                <span></span>
+            {% endif %}
+        </div>
     </div>
 
     <article class="lesson-content">
         <h1>{{ lesson.title }}</h1>
-        {{ lesson.content | safe }}
+        {% if lesson.description %}
+            <p class="lesson-description">{{ lesson.description }}</p>
+        {% endif %}
     </article>
 
-    {% if lesson.interactive_task and current_user.is_authenticated %}
-        <div class="interactive-section" data-lesson-id="{{ lesson.id }}" data-expected="{{ lesson.expected_output or '' }}">
-            <h2>Практическое задание</h2>
-            <p class="task-description">{{ lesson.interactive_task }}</p>
-            
-            <div class="terminal" id="terminal">
-                <div class="terminal-header">
-                    <span class="terminal-title">Git Terminal</span>
-                    <div class="terminal-buttons">
-                        <span class="terminal-btn close"></span>
-                        <span class="terminal-btn minimize"></span>
-                        <span class="terminal-btn maximize"></span>
-                    </div>
+    <div class="steps-container">
+        {% for step in steps %}
+            <div class="step-section" id="step-{{ step.id }}" data-step-id="{{ step.id }}" data-step-order="{{ step.order }}" data-points="{{ step.points }}">
+                <h2 class="step-title">
+                    <span class="step-number">{{ step.order }}</span>
+                    {{ step.title }}
+                </h2>
+                
+                <div class="step-content">
+                    {{ step.content | safe }}
                 </div>
-                <div class="terminal-body" id="terminal-body">
-                    <div class="terminal-line">
-                        <span class="prompt">user@gitlearn:~$</span>
-                        <span class="output">Добро пожаловать в Git терминал!</span>
+
+                {% if step.is_interactive and step.step_type == 'practice' and current_user.is_authenticated %}
+                    <div class="interactive-section" data-lesson-id="{{ lesson.id }}" data-step-id="{{ step.id }}" data-step-order="{{ step.order }}" data-expected="{{ step.expected_command or '' }}">
+                        <h3>Практическое задание</h3>
+                        <p class="task-description">{{ step.content }}</p>
+
+                        <div class="terminal" id="terminal-{{ step.id }}">
+                            <div class="terminal-header">
+                                <span class="terminal-title">Git Terminal</span>
+                                <div class="terminal-buttons">
+                                    <span class="terminal-btn close"></span>
+                                    <span class="terminal-btn minimize"></span>
+                                    <span class="terminal-btn maximize"></span>
+                                </div>
+                            </div>
+                            <div class="terminal-body" id="terminal-body-{{ step.id }}">
+                                <div class="terminal-line">
+                                    <span class="prompt">user@gitlearn:~$</span>
+                                    <span class="output">Добро пожаловать в Git терминал!</span>
+                                </div>
+                                <div class="terminal-line">
+                                    <span class="prompt">user@gitlearn:~$</span>
+                                    <span class="output">Введите команду для выполнения задания</span>
+                                </div>
+                            </div>
+                            <div class="terminal-input-line">
+                                <span class="prompt">user@gitlearn:~$</span>
+                                <input type="text" class="terminal-input" autocomplete="off" spellcheck="false" data-step-id="{{ step.id }}">
+                            </div>
+                        </div>
+
+                        <div class="feedback" id="feedback-{{ step.id }}"></div>
+
+                        <div class="step-actions">
+                            <button class="btn btn-primary check-btn" data-step-id="{{ step.id }}">Проверить команду</button>
+                            <button class="btn btn-secondary hint-btn" data-step-id="{{ step.id }}">Получить подсказку</button>
+                        </div>
+
+                        <div class="hints-container" id="hints-{{ step.id }}"></div>
                     </div>
-                    <div class="terminal-line">
-                        <span class="prompt">user@gitlearn:~$</span>
-                        <span class="output">Введите команду для выполнения задания</span>
+                {% endif %}
+
+                {% if step.step_type == 'quiz' and current_user.is_authenticated %}
+                    <div class="quiz-section" data-lesson-id="{{ lesson.id }}">
+                        <h3>Проверка знаний</h3>
+                        {% for question in quiz_questions %}
+                            <div class="quiz-question" data-question-id="{{ question.id }}" data-step-id="{{ step.id }}">
+                                <p class="question-text">{{ question.question_text }}</p>
+                                <div class="quiz-answers">
+                                    {% for answer in question.answers %}
+                                        <label class="quiz-answer">
+                                            <input type="radio" name="question-{{ question.id }}" value="{{ answer.id }}">
+                                            {{ answer.answer_text }}
+                                        </label>
+                                    {% endfor %}
+                                </div>
+                                <button class="btn btn-primary submit-answer" data-question-id="{{ question.id }}" data-step-id="{{ step.id }}">Ответить</button>
+                                <div class="feedback" id="quiz-feedback-{{ question.id }}"></div>
+                            </div>
+                        {% endfor %}
                     </div>
-                </div>
-                <div class="terminal-input-line">
-                    <span class="prompt">user@gitlearn:~$</span>
-                    <input type="text" id="terminal-input" class="terminal-input" autocomplete="off" spellcheck="false">
-                </div>
+                {% endif %}
             </div>
-            
-            <div id="feedback" class="feedback"></div>
-            
-            <button class="btn btn-primary" id="check-btn">Проверить команду</button>
-        </div>
-    {% endif %}
+        {% endfor %}
+    </div>
 
     <div class="lesson-footer">
         {% if current_user.is_authenticated %}
+            {% if user_progress and not user_progress.completed and continue_step_id %}
+                <a href="{{ url_for('main.continue_lesson', slug=lesson.slug) }}" class="btn btn-success">Продолжить с этапа {{ user_progress.current_step }}</a>
+            {% endif %}
             <button class="btn btn-success" id="complete-btn" data-lesson-id="{{ lesson.id }}">Отметить как пройденное</button>
         {% else %}
             <p class="login-prompt"><a href="{{ url_for('main.login') }}">Войдите</a>, чтобы сохранять прогресс</p>
@@ -85,7 +133,7 @@
 {% block scripts %}
 <script>
     const LESSON_ID = {{ lesson.id }};
-    const EXPECTED_OUTPUT = "{{ lesson.expected_output or '' }}";
     const IS_AUTHENTICATED = {{ 'true' if current_user.is_authenticated else 'false' }};
+    const CONTINUE_STEP_ID = {{ continue_step_id if continue_step_id else 'null' }};
 </script>
 {% endblock %}

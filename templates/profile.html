@@ -1,0 +1,120 @@
+{% extends "base.html" %}
+
+{% block title %}Профиль - GitLearn{% endblock %}
+
+{% block content %}
+<div class="profile-container">
+    <h1>Профиль пользователя</h1>
+    
+    <div class="profile-header">
+        <div class="profile-avatar">
+            {{ current_user.username[0].upper() }}
+        </div>
+        <div class="profile-info">
+            <h2>{{ current_user.username }}</h2>
+            <p class="profile-email">{{ current_user.email }}</p>
+            <div class="level-badge">
+                <span class="level-label">Уровень</span>
+                <span class="level-value">{{ current_user.level }}</span>
+            </div>
+        </div>
+    </div>
+
+    <div class="profile-stats">
+        <div class="stat-card">
+            <div class="stat-details">
+                <div class="stat-value">{{ current_user.created_at.strftime('%d.%m.%Y') }}</div>
+                <div class="stat-label">Дата регистрации</div>
+            </div>
+        </div>
+
+        <div class="stat-card">
+            <div class="stat-details">
+                <div class="stat-value">{{ current_user.streak_days }}</div>
+                <div class="stat-label">Текущая серия</div>
+            </div>
+        </div>
+
+        <div class="stat-card">
+            <div class="stat-details">
+                <div class="stat-value">{{ current_user.max_streak_days }}</div>
+                <div class="stat-label">Лучшая серия</div>
+            </div>
+        </div>
+
+        <div class="stat-card">
+            <div class="stat-details">
+                <div class="stat-value">{{ current_user.total_experience }}</div>
+                <div class="stat-label">Опыт</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="xp-progress-section">
+        <h2>Прогресс уровня</h2>
+        <div class="xp-bar-container">
+            <div class="xp-bar-fill" style="width: {{ xp_percentage }}%"></div>
+        </div>
+        <p class="xp-text">{{ xp_current }} / {{ xp_needed }} XP до уровня {{ current_user.level + 1 }}</p>
+    </div>
+
+    <div class="learning-progress">
+        <h2>Прогресс обучения</h2>
+        
+        <div class="current-stage">
+            <h3>Текущий этап</h3>
+            {% if current_lesson %}
+                <div class="stage-card">
+                    <div class="stage-info">
+                        <span class="stage-number">Урок {{ current_lesson.order }}</span>
+                        <h4>{{ current_lesson.title }}</h4>
+                        <p>{{ current_lesson.description }}</p>
+                    </div>
+                    <a href="{{ url_for('main.continue_lesson', slug=current_lesson.slug) }}" class="btn btn-primary">Продолжить</a>
+                </div>
+            {% else %}
+                <div class="stage-card empty">
+                    <p>Вы ещё не начали обучение или прошли все уроки</p>
+                    <a href="{{ url_for('main.index') }}" class="btn btn-primary">Начать обучение</a>
+                </div>
+            {% endif %}
+        </div>
+
+        <div class="overall-progress">
+            <h3>Общий прогресс</h3>
+            <div class="progress-bar-container">
+                <div class="progress-bar" style="width: {{ (completed_lessons / total_lessons * 100) if total_lessons > 0 else 0 }}%"></div>
+            </div>
+            <p>Пройдено {{ completed_lessons }} из {{ total_lessons }} уроков</p>
+        </div>
+    </div>
+
+    <div class="hints-summary">
+        <h2>Использование подсказок</h2>
+        {% if hints_by_lesson %}
+            <div class="hints-list">
+                {% for lesson_title, hint_count, is_completed in hints_by_lesson %}
+                    <div class="hint-item">
+                        <span class="hint-lesson">{{ lesson_title }}</span>
+                        {% if is_completed %}
+                            {% if hint_count == 0 %}
+                                <span class="hint-praise">Молодец!</span>
+                            {% elif hint_count == 1 %}
+                                <span class="hint-count">{{ hint_count }} подсказка</span>
+                            {% elif hint_count >= 2 and hint_count <= 4 %}
+                                <span class="hint-count">{{ hint_count }} подсказки</span>
+                            {% else %}
+                                <span class="hint-count">{{ hint_count }} подсказок</span>
+                            {% endif %}
+                        {% else %}
+                            <span class="hint-not-completed">Не пройдено</span>
+                        {% endif %}
+                    </div>
+                {% endfor %}
+            </div>
+        {% else %}
+            <p class="no-hints">Вы ещё не начали проходить уроки</p>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}
