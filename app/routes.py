@@ -103,21 +103,23 @@ def profile():
         UserProgress.lesson_id == Lesson.id,
         UserProgress.user_id == current_user.id
     )).outerjoin(
-        UserHint, 
+        UserHint,
         db.and_(
             UserHint.lesson_id == Lesson.id,
             UserHint.user_id == current_user.id
         )
     ).group_by(Lesson.id, Lesson.title).order_by(Lesson.order).all()
-    
-    return render_template('profile.html', 
-        completed_lessons=completed_lessons, 
-        total_lessons=total_lessons, 
+
+    hints_data = [(row.title, row.hint_count, row.is_completed) for row in hints_by_lesson]
+
+    return render_template('profile.html',
+        completed_lessons=completed_lessons,
+        total_lessons=total_lessons,
         current_lesson=current_lesson,
         xp_current=xp_current,
         xp_needed=xp_needed,
         xp_percentage=xp_percentage,
-        hints_by_lesson=hints_by_lesson
+        hints_by_lesson=hints_data
     )
 
 @main.route('/lesson/<slug>')

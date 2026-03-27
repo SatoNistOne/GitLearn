@@ -350,7 +350,10 @@ git branch -d feature   # Удалить ветку
                 'points': 10
             }
         ],
-        'hints': [],
+        'hints': [
+            {'step_id': 3, 'content': 'Используйте команду git branch с именем ветки', 'hint_order': 1, 'penalty_points': 5},
+            {'step_id': 3, 'content': 'git branch feature', 'hint_order': 2, 'penalty_points': 10}
+        ],
         'quiz_questions': [],
         'assets': []
     },
@@ -380,7 +383,10 @@ git branch -d feature   # Удалить ветку
                 'points': 10
             }
         ],
-        'hints': [],
+        'hints': [
+            {'step_id': 2, 'content': 'Используйте команду git checkout', 'hint_order': 1, 'penalty_points': 5},
+            {'step_id': 2, 'content': 'git checkout main', 'hint_order': 2, 'penalty_points': 10}
+        ],
         'quiz_questions': [],
         'assets': []
     },
@@ -410,7 +416,10 @@ git branch -d feature   # Удалить ветку
                 'points': 10
             }
         ],
-        'hints': [],
+        'hints': [
+            {'step_id': 2, 'content': 'Используйте команду git merge', 'hint_order': 1, 'penalty_points': 5},
+            {'step_id': 2, 'content': 'git merge feature', 'hint_order': 2, 'penalty_points': 10}
+        ],
         'quiz_questions': [],
         'assets': []
     },
@@ -475,7 +484,10 @@ git reset --hard HEAD~1   # Полностью отменить
                 'points': 10
             }
         ],
-        'hints': [],
+        'hints': [
+            {'step_id': 2, 'content': 'Используйте команду git remote add', 'hint_order': 1, 'penalty_points': 5},
+            {'step_id': 2, 'content': 'git remote add origin https://github.com/user/repo.git', 'hint_order': 2, 'penalty_points': 10}
+        ],
         'quiz_questions': [],
         'assets': []
     },
@@ -505,7 +517,10 @@ git reset --hard HEAD~1   # Полностью отменить
                 'points': 10
             }
         ],
-        'hints': [],
+        'hints': [
+            {'step_id': 2, 'content': 'Используйте команду git push', 'hint_order': 1, 'penalty_points': 5},
+            {'step_id': 2, 'content': 'git push origin main', 'hint_order': 2, 'penalty_points': 10}
+        ],
         'quiz_questions': [],
         'assets': []
     },
@@ -535,7 +550,10 @@ git reset --hard HEAD~1   # Полностью отменить
                 'points': 10
             }
         ],
-        'hints': [],
+        'hints': [
+            {'step_id': 2, 'content': 'Используйте команду git pull', 'hint_order': 1, 'penalty_points': 5},
+            {'step_id': 2, 'content': 'git pull origin main', 'hint_order': 2, 'penalty_points': 10}
+        ],
         'quiz_questions': [],
         'assets': []
     },
