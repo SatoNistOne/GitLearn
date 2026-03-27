@@ -94,23 +94,19 @@ def profile():
         xp_needed = int(xp_needed * 1.5)
     
     xp_percentage = (xp_current / xp_needed * 100) if xp_needed > 0 else 0
-    
+
+    # Упрощённый запрос без user_hint (может не быть на старых БД)
     hints_by_lesson = db.session.query(
         Lesson.title,
-        db.func.count(UserHint.id).label('hint_count'),
-        db.func.max(UserProgress.completed).label('is_completed')
-    ).outerjoin(UserProgress, db.and_(
-        UserProgress.lesson_id == Lesson.id,
+        UserProgress.completed
+    ).join(
+        UserProgress,
+        UserProgress.lesson_id == Lesson.id
+    ).filter(
         UserProgress.user_id == current_user.id
-    )).outerjoin(
-        UserHint,
-        db.and_(
-            UserHint.lesson_id == Lesson.id,
-            UserHint.user_id == current_user.id
-        )
-    ).group_by(Lesson.id, Lesson.title).order_by(Lesson.order).all()
+    ).order_by(Lesson.order).all()
 
-    hints_data = [(row.title, row.hint_count, row.is_completed) for row in hints_by_lesson]
+    hints_data = [(row.title, 0, row.completed) for row in hints_by_lesson]
 
     return render_template('profile.html',
         completed_lessons=completed_lessons,

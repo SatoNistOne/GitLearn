@@ -9,14 +9,14 @@
         {{ form.hidden_tag() }}
         <div class="form-group">
             {{ form.username_or_email.label }}
-            {{ form.username_or_email() }}
+            {{ form.username_or_email(maxlength=128, placeholder='Имя пользователя или email') }}
             {% for error in form.username_or_email.errors %}
                 <span class="error">{{ error }}</span>
             {% endfor %}
         </div>
         <div class="form-group">
             {{ form.password.label }}
-            {{ form.password() }}
+            {{ form.password(maxlength=128) }}
             {% for error in form.password.errors %}
                 <span class="error">{{ error }}</span>
             {% endfor %}
