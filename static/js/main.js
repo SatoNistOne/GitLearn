@@ -111,7 +111,6 @@ document.addEventListener('DOMContentLoaded', function() {
 
         const expected = interactiveSection.dataset.expected;
         const lessonId = interactiveSection.dataset.lessonId;
-        const timeTaken = Math.floor((Date.now() - stepStartTime[stepId]) / 1000);
 
         if (!expected) {
             showFeedback(stepId, 'Задание выполнено!', true);
@@ -127,8 +126,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 command: lastCommand,
                 expected: expected,
                 lesson_id: parseInt(lessonId),
-                step_id: parseInt(stepId),
-                time_taken: timeTaken
+                step_id: parseInt(stepId)
             })
         })
         .then(response => response.json())

@@ -78,7 +78,7 @@ def profile():
     total_lessons = len(lessons)
     
     current_lesson = None
-    in_progress = UserProgress.query.filter_by(user_id=current_user.id, completed=False).filter(UserProgress.current_step > 0).first()
+    in_progress = UserProgress.query.filter_by(user_id=current_user.id, completed=False).filter(UserProgress.current_step_id != None).first()
     if in_progress:
         current_lesson = Lesson.query.get(in_progress.lesson_id)
     
